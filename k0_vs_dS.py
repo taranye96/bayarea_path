@@ -11,8 +11,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Which records were reiduals computed on?
+res_dataset = '10evs_10stns'
+
 # Read in path effects file
-dS_df = pd.read_csv('/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/reformatted/SFBA_dS_meml.txt',delimiter='\t')
+dS_df = pd.read_csv(f'/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/{res_dataset}/reformatted/SFBA_dS_meml.txt',delimiter='\t')
 
 # Read in kappa values from Nye et al. (2022)
 kappa_df = pd.read_csv('/Users/tnye/bayarea_path/files/site_info/kappa/Nye22_BayArea_kappa.txt')
@@ -35,37 +38,37 @@ for kappa_stn in kappa_stns:
 
 # Get list of kappas and path effects for the overlapping stations in the datasets
 k0_list = []
-BSSA14_rock_dP_list = []
-BSSA14_dP_list = []
-ASK14_rock_dP_list = []
-ASK14_dP_list = []
+BSSA14_rock_dS_list = []
+BSSA14_dS_list = []
+ASK14_rock_dS_list = []
+ASK14_dS_list = []
 for i in range(len(dS_df)):
     stn = all_stns[i]
     if stn in kappa_stns:
         idx = np.where(kappa_stns == stn)[0][0]
         k0_list.append(k0[idx])
-        BSSA14_rock_dP_list.append(dS_df['BSSA14rock_PGA_res dS'].iloc[i])
-        BSSA14_dP_list.append(dS_df['BSSA14_PGA_res dS'].iloc[i])
-        ASK14_rock_dP_list.append(dS_df['ASK14rock_PGA_res dS'].iloc[i])
-        ASK14_dP_list.append(dS_df['ASK14_PGA_res dS'].iloc[i])
+        BSSA14_rock_dS_list.append(dS_df['BSSA14rock_PGA_res dS'].iloc[i])
+        BSSA14_dS_list.append(dS_df['BSSA14_PGA_res dS'].iloc[i])
+        ASK14_rock_dS_list.append(dS_df['ASK14rock_PGA_res dS'].iloc[i])
+        ASK14_dS_list.append(dS_df['ASK14_PGA_res dS'].iloc[i])
 
 
 #%% Plot results
 
 fig, axs = plt.subplots(2,2, figsize=(6,4.5))
-axs[0,0].scatter(k0_list, BSSA14_rock_dP_list, c='palevioletred', s=5, alpha=0.5)
+axs[0,0].scatter(k0_list, BSSA14_rock_dS_list, c='palevioletred', s=5, alpha=0.5)
 axs[0,0].set_title('BSSA14 Rock Conditions')
 axs[0,0].grid(ls='--',alpha=0.5)
 
-axs[0,1].scatter(k0_list, BSSA14_dP_list, c='palevioletred', s=5, alpha=0.5)
+axs[0,1].scatter(k0_list, BSSA14_dS_list, c='palevioletred', s=5, alpha=0.5)
 axs[0,1].set_title('BSSA14 Varying Site Conditions')
 axs[0,1].grid(ls='--',alpha=0.5)
 
-axs[1,0].scatter(k0_list, ASK14_rock_dP_list, c='palevioletred', s=5, alpha=0.5)
+axs[1,0].scatter(k0_list, ASK14_rock_dS_list, c='palevioletred', s=5, alpha=0.5)
 axs[1,0].set_title('ASK14 Rock Conditions')
 axs[1,0].grid(ls='--',alpha=0.5)
 
-axs[1,1].scatter(k0_list, ASK14_dP_list, c='palevioletred', s=5, alpha=0.5)
+axs[1,1].scatter(k0_list, ASK14_dS_list, c='palevioletred', s=5, alpha=0.5)
 axs[1,1].set_title('ASK14 Varying Site Conditions')
 axs[1,1].grid(ls='--',alpha=0.5)
 
@@ -73,5 +76,5 @@ plt.subplots_adjust(hspace=0.55, wspace=0.3)
 fig.supylabel(r'$\delta$S')
 fig.supxlabel(r'$\kappa_0$')
 
-plt.savefig('/Users/tnye/bayarea_path/plots/k0_dS.png',dpi=300)
+plt.savefig(f'/Users/tnye/bayarea_path/plots/k0_dS-{res_dataset}.png',dpi=300)
 

@@ -15,8 +15,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# Which records were residuals computed on?
+res_dataset = '100evs_100stns'
+
 # Read in path effects file
-dP_df = pd.read_csv('/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/reformatted/SFBA_dP_meml.txt',delimiter='\t')
+dP_df = pd.read_csv(f'/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/{res_dataset}/reformatted/SFBA_dP_meml.txt',delimiter='\t')
 
 # Read in kappa values from Nye et al. (2022)
 kappa_df = pd.read_csv('/Users/tnye/bayarea_path/files/site_info/kappa/Nye22_BayArea_kappa.txt')
@@ -77,5 +80,5 @@ plt.subplots_adjust(hspace=0.55, wspace=0.3)
 fig.supylabel(r'$\delta$P')
 fig.supxlabel(r'$\kappa_0$')
 
-plt.savefig('/Users/tnye/bayarea_path/plots/k0_dP.png',dpi=300)
+plt.savefig(f'/Users/tnye/bayarea_path/plots/k0_dP-{res_dataset}.png',dpi=300)
 

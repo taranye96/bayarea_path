@@ -3,14 +3,21 @@
 
 location_name <- 'SFBA'
 
+min_evs <- 10
+min_stns <- 10
+
+dir.create(sprintf("/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/%devs_%dstns/",min_evs,min_stns))
+dir.create(sprintf("/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/%devs_%dstns/R_output/",min_evs,min_stns))
+dir.create(sprintf("/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/%devs_%dstns/reformatted/",min_evs,min_stns))
+
 ## model names:
 model_name_list <- c('BSSA14rock_PGA_res','BSSA14_PGA_res','ASK14rock_PGA_res','ASK14_PGA_res')
 
 ## Project directory:
-project_directory <- '/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/'
+project_directory <- sprintf('/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/%devs_%dstns/', min_evs, min_stns)
 
 ## Data file:
-data_path <- '/Users/tnye/bayarea_path/files/residual_analysis/GMM_residuals.csv'
+data_path <- sprintf('/Users/tnye/bayarea_path/files/residual_analysis/GMM_residuals_culled-%devs-%dstns.csv', min_evs, min_stns)
 
 ##############################################################
 ############## Functions needed for mixed effects ##############

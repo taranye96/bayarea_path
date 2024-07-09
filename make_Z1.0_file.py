@@ -15,12 +15,19 @@ records_df = pd.read_csv('/Users/tnye/bayarea_path/data/gmprocess/waveforms/data
 
 # Get list of unique stations
 stns = np.unique(records_df['StationCode'])[1:] #for some reason the header was showing up in this array
-
+lons = []
+lats = []
+for stn in stns:
+    lons.append(records_df['StationLongitude'].iloc[np.where(records_df['StationCode'] == stn)[0][0]])
+    lats.append(records_df['StationLatitude'].iloc[np.where(records_df['StationCode'] == stn)[0][0]])
+    
 stn_list = []
 z1_list = []
+lon_list = []
+lat_list = []
 
 # Loop over stations
-for stn in stns:
+for i, stn in enumerate(stns):
     
     try:
         # Initialize input file
@@ -30,11 +37,13 @@ for stn in stns:
         z1 = -1*data[idx,0]
         stn_list.append(stn)
         z1_list.append(z1)
+        lon_list.append(lons[i])
+        lat_list.append(lats[i])
     
     except:
         print(f'{stn} {coords}: {np.max(data[:,1])}')
         continue
 
-data = {'Station':stn_list, 'Z1.0(m)':z1_list}
+data = {'Station':stn_list, 'Longitude':lon_list, 'Latitude':lat_list, 'Z1.0(m)':z1_list}
 df = pd.DataFrame(data)
-df.to_csv('/Users/tnye/bayarea_path/files/station_z1.0.csv',index=False)
+df.to_csv('/Users/tnye/bayarea_path/files/site_info/station_z1.0.csv',index=False)

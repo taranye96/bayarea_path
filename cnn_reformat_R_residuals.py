@@ -14,7 +14,10 @@ Created on Thu Aug 13 17:14:54 2020
 import numpy as np
 import pandas as pd
 
-project_directory = '/Users/tnye/bayarea_path/files/residual_analysis/R_MEML'
+min_evs = 100
+min_stns = 100
+
+project_directory = f'/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/{min_evs}evs_{min_stns}stns'
 
 ## location:
 loc_name = 'SFBA'
@@ -23,7 +26,7 @@ loc_name = 'SFBA'
 model_name_list = ['BSSA14rock_PGA_res','BSSA14_PGA_res','ASK14rock_PGA_res','ASK14_PGA_res']
 
 ## Read in the main file with pandas:
-res_df = pd.read_csv('/Users/tnye/bayarea_path/files/residual_analysis/GMM_residuals.csv')
+res_df = pd.read_csv(f'/Users/tnye/bayarea_path/files/residual_analysis/GMM_residuals_culled-{min_evs}evs-{min_stns}stns.csv')
 
 ## Make empty dataframes for the event and site, with just event and site info:
 event_df = res_df.copy()[['Event',  'Qlon', 'Qlat', 'Qdepth', 'Magnitude']]

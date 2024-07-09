@@ -15,11 +15,46 @@ Created on Wed Jul  3 08:33:00 2024
 import numpy as np
 import pandas as pd
 
+min_stns = 10
+min_evs = 10
+
+outfile = f'/Users/tnye/bayarea_path/files/residual_analysis/GMM_residuals_culled-{min_evs}evs-{min_stns}stns.csv'
+
 # Read in IM flatfiles
 bssa14_rock_df = pd.read_csv('/Users/tnye/bayarea_path/files/residual_analysis/IM_flatfiles/IMs_BSSA14_rock.csv')
 bssa14_df = pd.read_csv('/Users/tnye/bayarea_path/files/residual_analysis/IM_flatfiles/IMs_BSSA14.csv')
 ask14_rock_df = pd.read_csv('/Users/tnye/bayarea_path/files/residual_analysis/IM_flatfiles/IMs_ASK14_rock.csv')
 ask14_df = pd.read_csv('/Users/tnye/bayarea_path/files/residual_analysis/IM_flatfiles/IMs_ASK14.csv')
+
+
+#%% Cull records to sations that have recorded at least 8 events and events
+  # That have been recorded on at least 5 stations
+
+stn_idx = np.array([])
+ev_idx = np.array([])
+
+events = np.unique(ask14_df['Event'])
+stns = np.unique(ask14_df['Station'])
+
+for stn in stns:
+    idx = np.where(ask14_df['Station'] == stn)[0]
+    if len(idx) >= min_evs:
+        stn_idx = np.append(stn_idx,idx)
+    
+for ev in events:
+    idx = np.where(ask14_df['Event'] == ev)[0]
+    if len(idx) >= min_stns:
+        ev_idx = np.append(ev_idx,idx)
+
+useable_idx = np.intersect1d(stn_idx,ev_idx)
+
+bssa14_rock_df = bssa14_rock_df.loc[useable_idx]
+bssa14_df = bssa14_df.loc[useable_idx]
+ask14_rock_df = ask14_rock_df.loc[useable_idx]
+ask14_df = ask14_df.loc[useable_idx]
+
+
+#%%
 
 # Get obseved IMs
 obs_pga = bssa14_df['Obs_PGA(g)'].values
@@ -109,4 +144,4 @@ ask14_SA_df = pd.DataFrame(ask14_SA_res, columns=ask14_SA_col_headers)
 
 # Final dataframe
 res_df = main_df.join(pgm_res_df.join(bssa14rock_SA_df.join(bssa14_SA_df.join(ask14rock_SA_df.join(ask14_SA_df)))))
-res_df.to_csv('/Users/tnye/bayarea_path/files/residual_analysis/GMM_residuals.csv')
+res_df.to_csv(outfile)
