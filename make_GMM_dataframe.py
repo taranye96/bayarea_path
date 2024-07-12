@@ -168,7 +168,7 @@ for i in range(len(records_df)):
         elev.append(records_df['StationElevation'].iloc[i])
         mag_list.append(mag)
         rhyp_list.append(rhyp)
-        rrup_list.append(rhyp)
+        rrup_list.append(rrup)
         rjb_list.append(rjb)
         ztor_list.append(ztor)
         
@@ -183,6 +183,10 @@ for i in range(len(records_df)):
             rake = focal_df['nc_np1_rake'].iloc[ind]
             dip = focal_df['nc_np1_dip'].iloc[ind]
             w = 'calc'
+            
+            if np.isnan(dip):
+                dip = 90
+                
         else:
             rake = 0
             dip = 90
@@ -358,14 +362,14 @@ ask14_SA_rock_res = np.log(np.array(obs_SA)/np.array(ask14_SA_rock))
 ask14_SA_res = np.log(np.array(obs_SA)/np.array(ask14_SA))
 
 
-#%% Create first part of dataframe
+#%% Create first part of dataframe for rock 
 
 # Create dictionary 
 param_dict = {'Event':events,'Magnitude':mag_list,'Qlon':Qlon,'Qlat':Qlat,'Qdepth':Qdep,
                 'Station':names,'Slon':Slon,'Slat':Slat,'Selev':elev,'Rhyp(km)':rhyp_list,
                 'Rrup(km)':rrup_list,'Rjb(km)':rjb_list,'Ztor(km)':ztor_list,'Rake':rake_list,
-                'Dip':dip_list,'Width(km)':width_list,'Vs30(m/s)':vs30_list,'Vs30_meas':vs30_meas_list,
-                'Z1.0(m)':z1pt0_list,'Obs_PGA(g)':obs_pga,'Obs_PGV(cm/s)':obs_pgv}
+                'Dip':dip_list,'Width(km)':width_list,'Vs30(m/s)':[760.0]*len(vs30_list),'Vs30_meas':vs30_meas_list,
+                'Z1.0(m)':[1000]*len(z1pt0_list),'Obs_PGA(g)':obs_pga,'Obs_PGV(cm/s)':obs_pgv}
 param_df = pd.DataFrame(param_dict)
 
 SA_col_headers = ['Obs_SA(T=0.01)(g)','Obs_SA(T=0.02)(g)','Obs_SA(T=0.03)(g)',
@@ -414,6 +418,59 @@ bssa14_rock_df = main_df.join(pgm_df.join(SA_bssa14_rock_df.join(SA_std_bssa14_r
 bssa14_rock_df.to_csv('/Users/tnye/bayarea_path/files/residual_analysis/IM_flatfiles/IMs_BSSA14_rock.csv',index=False)
 
 
+#%% ASK14 rock
+
+pgm_dict = {'ASK14_PGA(g)':ask14_pga_rock,'ASK14_PGA-std':ask14_pga_std_rock,
+            'ASK14_PGV(cm/s)':ask14_pgv_rock,'ASK14_PGV-std':ask14_pgv_std_rock}
+pgm_df = pd.DataFrame(pgm_dict)
+
+SA_col_headers = ['ASK14_SA(T=0.01)(g)','ASK14_SA(T=0.02)(g)','ASK14_SA(T=0.03)(g)',
+                  'ASK14_SA(T=0.05)(g)','ASK14_SA(T=0.075)(g)','ASK14_SA(T=0.1)(g)',
+                  'ASK14_SA(T=0.15)(g)','ASK14_SA(T=0.2)(g)','ASK14_SA(T=0.25)(g)',
+                  'ASK14_SA(T=0.3)(g)','ASK14_SA(T=0.4)(g)','ASK14_SA(T=0.5)(g)',
+                  'ASK14_SA(T=0.75)(g)','ASK14_SA(T=1.0)(g)','ASK14_SA(T=1.5)(g)',
+                  'ASK14_SA(T=2.0)(g)','ASK14_SA(T=3.0)(g)','ASK14_SA(T=4.0)(g)',
+                  'ASK14_SA(T=5.0)(g)','ASK14_SA(T=7.5)(g)',
+                  'ASK14_SA(T=10.0)(g)']
+
+SA_std_col_headers = ['ASK14_SA-std(T=0.01)(g)','ASK14_SA-std(T=0.02)(g)','ASK14_SA-std(T=0.03)(g)',
+                  'ASK14_SA-std(T=0.05)(g)','ASK14_SA-std(T=0.075)(g)','ASK14_SA-std(T=0.1)(g)',
+                  'ASK14_SA-std(T=0.15)(g)','ASK14_SA-std(T=0.2)(g)','ASK14_SA-std(T=0.25)(g)',
+                  'ASK14_SA-std(T=0.3)(g)','ASK14_SA-std(T=0.4)(g)','ASK14_SA-std(T=0.5)(g)',
+                  'ASK14_SA-std(T=0.75)(g)','ASK14_SA-std(T=1.0)(g)','ASK14_SA-std(T=1.5)(g)',
+                  'ASK14_SA-std(T=2.0)(g)','ASK14_SA-std(T=3.0)(g)','ASK14_SA-std(T=4.0)(g)',
+                  'ASK14_SA-std(T=5.0)(g)','ASK14_SA-std(T=7.5)(g)',
+                  'ASK14_SA-std(T=10.0)(g)']
+
+SA_ask14_rock_df = pd.DataFrame(ask14_SA_rock, columns=SA_col_headers)
+SA_std_ask14_rock_df = pd.DataFrame(ask14_SA_std_rock, columns=SA_std_col_headers)
+
+ask14_rock_df = main_df.join(pgm_df.join(SA_ask14_rock_df.join(SA_std_ask14_rock_df)))
+ask14_rock_df.to_csv('/Users/tnye/bayarea_path/files/residual_analysis/IM_flatfiles/IMs_ASK14_rock.csv',index=False)
+
+
+#%% Create first part of dataframe for varying site 
+
+# Create dictionary 
+param_dict = {'Event':events,'Magnitude':mag_list,'Qlon':Qlon,'Qlat':Qlat,'Qdepth':Qdep,
+                'Station':names,'Slon':Slon,'Slat':Slat,'Selev':elev,'Rhyp(km)':rhyp_list,
+                'Rrup(km)':rrup_list,'Rjb(km)':rjb_list,'Ztor(km)':ztor_list,'Rake':rake_list,
+                'Dip':dip_list,'Width(km)':width_list,'Vs30(m/s)':vs30_list,'Vs30_meas':vs30_meas_list,
+                'Z1.0(m)':z1pt0_list,'Obs_PGA(g)':obs_pga,'Obs_PGV(cm/s)':obs_pgv}
+param_df = pd.DataFrame(param_dict)
+
+SA_col_headers = ['Obs_SA(T=0.01)(g)','Obs_SA(T=0.02)(g)','Obs_SA(T=0.03)(g)',
+                  'Obs_SA(T=0.05)(g)','Obs_SA(T=0.075)(g)','Obs_SA(T=0.1)(g)',
+                  'Obs_SA(T=0.15)(g)','Obs_SA(T=0.2)(g)','Obs_SA(T=0.25)(g)',
+                  'Obs_SA(T=0.3)(g)','Obs_SA(T=0.4)(g)','Obs_SA(T=0.5)(g)',
+                  'Obs_SA(T=0.75)(g)','Obs_SA(T=1.0)(g)','Obs_SA(T=1.5)(g)',
+                  'Obs_SA(T=2.0)(g)','Obs_SA(T=3.0)(g)','Obs_SA(T=4.0)(g)',
+                  'Obs_SA(T=5.0)(g)','Obs_SA(T=7.5)(g)','Obs_SA(T=10.0)(g)']
+obs_SA_df = pd.DataFrame(obs_SA, columns=SA_col_headers)
+                
+main_df = param_df.join(obs_SA_df)
+
+
 #%% BSSA14 
 
 pgm_dict = {'BSSA14_PGA(g)':bssa14_pga,'BSSA14_PGA-std':bssa14_pga_std,
@@ -444,35 +501,8 @@ SA_std_bssa14_df = pd.DataFrame(bssa14_SA_std, columns=SA_std_col_headers)
 bssa14_df = main_df.join(pgm_df.join(SA_bssa14_df.join(SA_std_bssa14_df)))
 bssa14_df.to_csv('/Users/tnye/bayarea_path/files/residual_analysis/IM_flatfiles/IMs_BSSA14.csv',index=False)
 
-#%% ASK14 rock
 
-pgm_dict = {'ASK14_PGA(g)':ask14_pga_rock,'ASK14_PGA-std':ask14_pga_std_rock,
-            'ASK14_PGV(cm/s)':ask14_pgv_rock,'ASK14_PGV-std':ask14_pgv_std_rock}
-pgm_df = pd.DataFrame(pgm_dict)
 
-SA_col_headers = ['ASK14_SA(T=0.01)(g)','ASK14_SA(T=0.02)(g)','ASK14_SA(T=0.03)(g)',
-                  'ASK14_SA(T=0.05)(g)','ASK14_SA(T=0.075)(g)','ASK14_SA(T=0.1)(g)',
-                  'ASK14_SA(T=0.15)(g)','ASK14_SA(T=0.2)(g)','ASK14_SA(T=0.25)(g)',
-                  'ASK14_SA(T=0.3)(g)','ASK14_SA(T=0.4)(g)','ASK14_SA(T=0.5)(g)',
-                  'ASK14_SA(T=0.75)(g)','ASK14_SA(T=1.0)(g)','ASK14_SA(T=1.5)(g)',
-                  'ASK14_SA(T=2.0)(g)','ASK14_SA(T=3.0)(g)','ASK14_SA(T=4.0)(g)',
-                  'ASK14_SA(T=5.0)(g)','ASK14_SA(T=7.5)(g)',
-                  'ASK14_SA(T=10.0)(g)']
-
-SA_std_col_headers = ['ASK14_SA-std(T=0.01)(g)','ASK14_SA-std(T=0.02)(g)','ASK14_SA-std(T=0.03)(g)',
-                  'ASK14_SA-std(T=0.05)(g)','ASK14_SA-std(T=0.075)(g)','ASK14_SA-std(T=0.1)(g)',
-                  'ASK14_SA-std(T=0.15)(g)','ASK14_SA-std(T=0.2)(g)','ASK14_SA-std(T=0.25)(g)',
-                  'ASK14_SA-std(T=0.3)(g)','ASK14_SA-std(T=0.4)(g)','ASK14_SA-std(T=0.5)(g)',
-                  'ASK14_SA-std(T=0.75)(g)','ASK14_SA-std(T=1.0)(g)','ASK14_SA-std(T=1.5)(g)',
-                  'ASK14_SA-std(T=2.0)(g)','ASK14_SA-std(T=3.0)(g)','ASK14_SA-std(T=4.0)(g)',
-                  'ASK14_SA-std(T=5.0)(g)','ASK14_SA-std(T=7.5)(g)',
-                  'ASK14_SA-std(T=10.0)(g)']
-
-SA_ask14_rock_df = pd.DataFrame(ask14_SA_rock, columns=SA_col_headers)
-SA_std_ask14_rock_df = pd.DataFrame(ask14_SA_std_rock, columns=SA_std_col_headers)
-
-ask14_rock_df = main_df.join(pgm_df.join(SA_ask14_rock_df.join(SA_std_ask14_rock_df)))
-ask14_rock_df.to_csv('/Users/tnye/bayarea_path/files/residual_analysis/IM_flatfiles/IMs_ASK14_rock.csv',index=False)
 
 #%% ASK14 
 
