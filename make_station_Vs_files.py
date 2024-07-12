@@ -19,7 +19,7 @@ records_df = pd.read_csv('/Users/tnye/bayarea_path/data/gmprocess/waveforms/data
 stns = np.unique(records_df['StationCode'])[1:] #for some reason the header was showing up in this array
 
 # Depth array 
-z_list = np.arange(0, -3000, -10)
+z_list = np.arange(0, -5000, -10)
 
 # Needed to run geomodelgrids
 os.chdir('/Users/tnye/code/geomodelgrids/')
