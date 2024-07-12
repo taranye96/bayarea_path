@@ -17,7 +17,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Which records were residuals computed on?
-res_dataset = '8evs_5stns'
+res_dataset = '5evs_5stns'
 
 # Read in path effects file
 dP_df = pd.read_csv(f'/Users/tnye/bayarea_path/files/residual_analysis/R_MEML/{res_dataset}/reformatted/SFBA_dP_meml.txt',delimiter='\t')
@@ -83,5 +83,5 @@ plt.subplots_adjust(hspace=0.55, wspace=0.3)
 fig.supylabel(r'$\delta$P')
 fig.supxlabel(r'$\kappa_0$')
 
-plt.savefig(f'/Users/tnye/bayarea_path/plots/k0_dP-{res_dataset}-DesignSafe.png',dpi=300)
+plt.savefig(f'/Users/tnye/bayarea_path/plots/k0_plots/k0_dP-DesignSafe.png',dpi=300)
 
