@@ -59,32 +59,28 @@ def bssa14(IM,M,Rrup,Rjb,ztor=7.13,rake=0.0,vs30=760,vs30_meas=False,z1pt0=1.0,p
     rctx.rake = rake 
     rctx.ztor = ztor
     
-    # Scenario I: If M and Rrup are both single values:
-    #   Then set the magnitude as a float, and the rrup/distance as an array
-    #   of one value
-    if isinstance(M,float) & isinstance(Rrup,float):
-        rctx.mag = M
-        dctx.rrup = np.logspace(np.log10(Rrup),np.log10(Rrup),1)
+    rctx.mag = M
+    dctx.rrup = np.logspace(np.log10(Rrup),np.log10(Rrup),1)
 
-        # Then compute everything else...
-        #   Assuming average ztor, get rjb:
-        dctx.rjb = Rjb
-        # dctx.rjb = np.sqrt(dctx.rrup**2 - rctx.ztor**2)
+    # Then compute everything else...
+    #   Assuming average ztor, get rjb:
+    dctx.rjb = Rjb
+    # dctx.rjb = np.sqrt(dctx.rrup**2 - rctx.ztor**2)
+    
+    # #   Set site parameters
+    # sctx.vs30 = np.ones_like(dctx.rrup) * vs30
+    # sctx.vs30measured = np.full_like(dctx.rrup, False, dtype='bool')
+    sitecol_dict = {'sids':[1],'vs30':vs30,
+                    'vs30measured':vs30_meas,'z1pt0':z1pt0,
+                    'z2pt5':None}
+    sitecollection = pd.DataFrame(sitecol_dict)
+    sctx = SitesContext(sitecol=sitecollection)
+    
+    #  Compute prediction
+    lnmean_boore14, sd_boore14 = boore.get_mean_and_stddevs(
+        sctx, rctx, dctx, IMT, [const.StdDev.TOTAL])
         
-        # #   Set site parameters
-        # sctx.vs30 = np.ones_like(dctx.rrup) * vs30
-        # sctx.vs30measured = np.full_like(dctx.rrup, False, dtype='bool')
-        sitecol_dict = {'sids':[1],'vs30':vs30,
-                        'vs30measured':vs30_meas,'z1pt0':None,
-                        'z2pt5':None}
-        sitecollection = pd.DataFrame(sitecol_dict)
-        sctx = SitesContext(sitecol=sitecollection)
-        
-        #  Compute prediction
-        lnmean_boore14, sd_boore14 = boore.get_mean_and_stddevs(
-            sctx, rctx, dctx, IMT, [const.StdDev.TOTAL])
-            
-        return(lnmean_boore14, sd_boore14)
+    return(lnmean_boore14, sd_boore14)
     
     
 def ask14(IM,M,Rrup,Rjb,ztor=7.13,rake=0.0,dip=90.0,width=10.0,vs30=1180,vs30_meas=False,z1pt0=0.003,period=None):
